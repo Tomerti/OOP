@@ -1,0 +1,72 @@
+package image;
+
+import java.awt.*;
+
+public class ProcessImage {
+    private Image image;
+    private Color[][] pixelArray;
+    private Image[][] subImages;
+    public ProcessImage(Image image) {
+        int originalHeight = image.getHeight();
+        int originalWidth = image.getWidth();
+        int rowsPadding = requiredPadding(originalHeight);
+        int colsPadding = requiredPadding(originalWidth);
+        int newHeight = originalHeight + (2 * rowsPadding);
+        int newWidth = originalWidth +(2 * colsPadding);
+        pixelArray = new Color[newHeight][newWidth];
+        for(int i=0; i < newHeight; i++){
+            for(int k=0; k < newWidth; k++){
+                if(i < rowsPadding || i >= newHeight - rowsPadding ||
+                        k < colsPadding || k >= newWidth - colsPadding){
+                    pixelArray[i][k] = (Color.white);
+                }
+                else{
+                    pixelArray[i][k] = image.getPixel(i,k);
+                }
+            }
+        }
+        this.image = new Image(pixelArray,newWidth,newHeight);
+    }
+
+    public void createSubImages(int imagesPerRow){
+        int subImageResolution = image.getWidth() / imagesPerRow;
+        int imagesPerCol = image.getHeight() / subImageResolution;
+        subImages = new Image[imagesPerCol][imagesPerRow];
+        for(int i=0; i < image.getHeight(); i+=subImageResolution){
+            for(int k=0; k< image.getWidth() ; k+=subImageResolution){
+                Color[][] subImage = new Color[subImageResolution][subImageResolution];
+                for(int j=0; j<subImageResolution; j++){
+                    for(int p=0;p<subImageResolution; p++){
+                        subImage[j][p] = image.getPixel(i+j,k+p);
+                    }
+                }
+                subImages[i/subImageResolution][k/subImageResolution] = new Image(subImage,
+                        subImageResolution,subImageResolution);
+            }
+        }
+    }
+
+    public double getSubImageBrightness(int i,int k){
+        Image subImage = subImages[i][k];
+        int subHeight = subImage.getHeight();
+        int subWidth = subImage.getWidth();
+        double greyValue = 0;
+        for(int j=0; j<subHeight;j++){
+            for(int p=0;p<subWidth;p++){
+                greyValue +=
+                        subImage.getPixel(j,p).getRed() * 0.2126 + subImage.getPixel(j,p).getGreen() * 0.7152
+                        + subImage.getPixel(j,p).getBlue() * 0.0722;
+            }
+        }
+        return greyValue / (subHeight * subWidth * 255);
+    }
+
+    private int requiredPadding(int size){
+        double powers = (double) (Math.log(size)/ Math.log(2));
+        double powersCeil = Math.ceil(powers);
+        if(powers == powersCeil){
+            return 0;
+        }
+        return (int) ((Math.pow(2,powersCeil) - size) / 2);
+    }
+}

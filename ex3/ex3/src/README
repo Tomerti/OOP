@@ -1,0 +1,17 @@
+tomer.titinger
+208611939
+
+I decided to use Hashmap that holds array of both normalized and unnormalized brightnesses for
+SubImgCharMatcher in order to minimize time complexity to find a specific brightness for char
+and to update it.
+
+I also decided to renormalize brightness values only if the minimum/maximum brightness has been changed
+(removed or added).
+
+When it comes to the algorithm, unfortunately I can't say the same as I've been in a rush to finish the
+project (and the README) in time, due to illness, so I have decided to go with the naive solution.
+
+For exceptions I created an exceptions class in Shell that prints relevant error messages according to the
+exception type (Resolution/Add/Remove/Image).
+
+UML is attached.
